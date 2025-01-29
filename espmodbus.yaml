@@ -1,0 +1,408 @@
+esphome:
+  name: espmodbus
+  friendly_name: espmodbus
+
+esp32:
+  board: esp32dev
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+# Enable Home Assistant API
+api:
+  encryption:
+    key: ""
+
+ota:
+  - platform: esphome
+    password: ""
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Espmodbus Fallback Hotspot"
+    password: ""
+
+captive_portal:
+
+web_server:
+  port: 80
+  version: 3
+  local: true
+
+uart:
+  - id: uartmodbus
+    tx_pin: GPIO 
+    rx_pin: GPIO 
+    baud_rate: 9600
+    stop_bits: 1
+    data_bits: 8
+    parity: NONE
+
+modbus:
+  - uart_id: uartmodbus
+    id: modbus1
+
+modbus_controller:
+  - id: modbus_device
+    address: 0x
+    update_interval: 10s
+
+sensor:
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Error Code"
+    address: 0
+    register_type: read
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Odu operation Cycle"
+    address: 1
+    register_type: read
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Water inlet temp"
+    address: 2
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Water outlet temp"
+    address: 3
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Backup heater outlet temp"
+    address: 4
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "DHW tank water temp"
+    address: 5
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Solar collector temp"
+    address: 6
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Room air temp(curcuit 1)"
+    address: 7
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    state_class: "measurement"
+    unit_of_measurement: "°C"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Current flow rate"
+    address: 8
+    register_type: read
+    value_type: U_WORD
+    unit_of_measurement: "L/min"
+    device_class: volume_flow_rate
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Flow temp(circuit 2)"
+    address: 9
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Room air temp(circuit 2)"
+    address: 10
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Energy state input"
+    address: 11
+    register_type: read
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Outdoor air temp"
+    address: 12
+    register_type: read
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+################################################
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Operation mode"
+    address: 0
+    register_type: holding
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Control method (Circuit 1/2)"
+    address: 1
+    register_type: holding
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Target temp (Heating/Cooling) Circuit 1"
+    address: 2
+    register_type: holding
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Room Air Temp. Circuit 1"
+    address: 3
+    register_type: holding
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Shift value in auto mode Circuit 1"
+    address: 4
+    register_type: holding
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Target temp (Heating/Cooling) Circuit 2"
+    address: 5
+    register_type: holding
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Room Air Temp. Circuit 2"
+    address: 6
+    register_type: holding
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Shift value in auto mode Circuit 2"
+    address: 7
+    register_type: holding
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "DHW Target temp"
+    address: 8
+    register_type: holding
+    value_type: S_WORD
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+    state_class: "measurement"
+    filters:
+      - multiply: 0.1
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Energy state input"
+    address: 9
+    register_type: holding
+
+
+binary_sensor:
+  - platform: modbus_controller
+    address: 0
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Water flow status"
+  - platform: modbus_controller
+    address: 1
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Water pump status"
+  - platform: modbus_controller
+    address: 2
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Ext. Water pump status"
+  - platform: modbus_controller
+    address: 3
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Compressor status"
+  - platform: modbus_controller
+    address: 4
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Defrosting status"
+  - platform: modbus_controller
+    address: 5
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "DHW heating status"
+  - platform: modbus_controller
+    address: 6
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "DHW Tank disinfection status"
+  - platform: modbus_controller
+    address: 7
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Silent mode status"
+  - platform: modbus_controller
+    address: 8
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Cooling status"
+  - platform: modbus_controller
+    address: 9
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Solar pump status"
+  - platform: modbus_controller
+    address: 10
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Backup heater (step 1) status"
+  - platform: modbus_controller
+    address: 11
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Backup heater (step 2) status"
+  - platform: modbus_controller
+    address: 12
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "DHW boost heater status"
+  - platform: modbus_controller
+    address: 13
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "ERROR status"
+  - platform: modbus_controller
+    address: 14
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Emergency Operation Available (Space heating/cooling)"
+  - platform: modbus_controller
+    address: 15
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Emergency Operation Available (DHW)"
+  - platform: modbus_controller
+    address: 16
+    modbus_controller_id: modbus_device
+    register_type: discrete_input
+    name: "Mix pump status"
+
+switch:
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    address: 0
+    register_type: coil
+    name: "Enable/Disable (Heating/Cooling)"
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    address: 1
+    register_type: coil
+    name: "Enable/Disable (DHW)"
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    address: 2
+    register_type: coil
+    name: "Silent Mode Set"
+  # - platform: modbus_controller
+  #   modbus_controller_id: modbus_device
+  #   address: 3
+  #   register_type: coil
+  #   name: "Trigger Disinfection operation"
+  # - platform: modbus_controller
+  #   modbus_controller_id: modbus_device
+  #   address: 4
+  #   register_type: coil
+  #   name: "Emergency Stop"
+  # - platform: modbus_controller
+  #   modbus_controller_id: modbus_device
+  #   address: 5
+  #   register_type: coil
+  #   name: "Trigger Emergency Operation"
+
+number:
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "DHW Temperature"
+    address: 8
+    value_type: S_WORD
+    register_type: holding
+    min_value: 34
+    max_value: 50
+    step: 1
+    multiply: 10
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+  - platform: modbus_controller
+    modbus_controller_id: modbus_device
+    name: "Heater Temperature"
+    address: 2
+    value_type: S_WORD
+    register_type: holding
+    min_value: 20
+    max_value: 45
+    step: 1
+    multiply: 10
+    device_class: "temperature"
+    unit_of_measurement: "°C"
+
